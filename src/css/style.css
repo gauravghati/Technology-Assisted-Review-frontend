@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+body, h1, h2, h3, h4, h5, h6 {
+  font-family: "Raleway", sans-serif;
+  background-color: white;
+}
+
+body, html {
+  height: 100%;
+  padding-top: 30px;
+  line-height: 1.8;
+}
+
+.w3-bar .w3-button {
+  padding: 16px;
+}
+
+.w3-button:hover{
+  color:#000!important;
+  background-color:#ccc!important
+}
+
+.w3-button-active {
+  color:#000!important;
+  background-color:#ccc!important
+}
+
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button1 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #4CAF50;
+}
+
+.button1:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.top-next-prev-button {
+  height: 110px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+}
+
+.document-name {
+  font-size: large;  
+  padding-left: 30px;
+}
+
+.bottom-submit-button{
+  height: 110px;
+  padding-bottom: 40px;
+  padding-right: 50px;
+}
+
+.inner-top-next-prev-button {
+  float: right;
+}
+
+/* Size the viewer as desired. In this case, we fill the browser window. */
+#viewer-container {
+  height: 100%;
+}
+
+.pdf-container {
+  padding-left: 30px;
+  height: 700px;
+  width: 50%;
+}
+
+.selectsoflow {
+  -webkit-appearance: button;
+  -webkit-padding-end: 20px;
+  -webkit-padding-start: 2px;
+  margin: 20px;
+  overflow: hidden;
+  padding: 5px 10px;
+  width: fit-content;
+}
+
+.search {
+  /* border: 1px solid #000; */
+  width: 30% ;
+  padding-top: 90px;
+  padding-right: 20px;
+  float: right;
+}
+
+.filterbutton {
+  /* border: 1px solid #000; */
+  padding-left: 20px;
+  width: 50%;
+}
+
+.filterlabelbutton {
+  margin-right: 50px;
+}
+
+.filterdrop {
+  /* border: 1px solid #000; */
+  width: 50%;
+}
+
+.filter-dropdowns {
+  /* border: 1px solid #000; */
+  padding-left: 50px;
+  padding-bottom: 50px;
+  font-size: 20px;
+  width: 100%;
+  float : left;
+}
+
+.pickrandom {
+  float: right;
+}
+
+.textpickrandom {
+  padding: 10px;
+}
+
+.resetbutton {
+  padding-top: 25px;
+}
+
+.reviwer-dropdown {
+  font-size: 20px;
+  width: 45%;
+  float: right;
+}
+
+.rowShow {
+  background-color: #ccc
+}
+
+.modal {
+  visibility: hidden;
+  transition: all 0.4s;
+  opacity: 0;
+}
+.modal.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal,
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 100;
+}
+
+.modal,
+.modal-card,
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-content {
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-body {
+  z-index: 101;
+  margin: auto;
+  max-height: calc(100vh - 1rem);
+  max-width: calc(100vw - 1rem);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 85%;
+  height: 100%;
+  background: white;
+}
+
+.modal-content{
+  padding: 1rem;
+}
+
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  /* table-layout: fixed; */
+}
+
+table caption {
+  font-size: 1.5em;
+  margin: .5em 0 .75em;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+  text-align: center;
+}
+
+table th {
+  font-size: .85em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+  
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+  
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+  
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
