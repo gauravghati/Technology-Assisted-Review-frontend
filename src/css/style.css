@@ -88,7 +88,6 @@ body, html {
   -webkit-padding-end: 20px;
   -webkit-padding-start: 2px;
   margin: 20px;
-  overflow: hidden;
   padding: 5px 10px;
   width: fit-content;
 }
@@ -113,7 +112,7 @@ body, html {
 
 .filterdrop {
   /* border: 1px solid #000; */
-  width: 50%;
+  width: 60%;
 }
 
 .filter-dropdowns {
@@ -137,7 +136,7 @@ body, html {
   padding-top: 25px;
 }
 
-.reviwer-dropdown {
+.reviewer-dropdown {
   font-size: 20px;
   width: 45%;
   float: right;

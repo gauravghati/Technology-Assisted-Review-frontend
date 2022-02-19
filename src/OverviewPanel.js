@@ -21,43 +21,49 @@ export default function OverviewPanel() {
     var [open, setOpen] = useState(false);
     var [currDoc, setCurrDoc] = useState();
 
-    // var labelArray = ["Label 0", "Label 1", "Label 2", "Label 3"];
+    var labelArr = ["Label 0", "Label 1", "Label 2", "Label 3"];
+    var statusArr = ["Manually Reviewer", "Auto Reviewer"];
+    var docTypeArr = ["PDF", "Picture", "Text File"];
+    var sortByArr = ["By Name", "By Uncertainity Score", "By Document Size"];
 
-    var [type, setType] = useState( { value : "NULL" } );
-    var [status, setStatus] = useState( { value : "NULL" } );
-    var [label, setLabel] = useState( { value : "NULL" } );
-    var [sortby, setSortBy] = useState( { value : "NULL" } );
+    var [type, setType] = useState([]);
+    var [label, setLabel] = useState([]);
+    var [status, setStatus] = useState("NULL");
+    var [sortby, setSortBy] = useState("NULL");
 
     async function fetchtheAPI() {
         const url = BASE_URL_BACKEND + "mainapp/documentlist/";
         var response = await fetch(url);
         var jsondata = await response.json();
 
-        if( type.value !== "NULL" )
-            jsondata = jsondata.filter( (doc) => doc.document_type === type.value )
 
-        if( status.value !== "NULL" ) {
-            var check = Boolean( status.value === "Manually Reviewer" );
+
+
+        // if( type !== "NULL" )\
+        //     jsondata = jsondata.filter( (doc) => doc.document_type === type )
+
+        // if( label !== "NULL" ) 
+        //     jsondata = jsondata.filter( (doc) => (doc.reviewed_label_name === label) )
+
+        if( status !== "NULL" ) {
+            var check = Boolean( status === "Manually Reviewer" );
             jsondata = jsondata.filter( (doc) => doc.is_reviewed === check )
-        }
+        }    
 
-        if( label.value !== "NULL" ) 
-            jsondata = jsondata.filter( (doc) => (doc.reviewed_label_name === label.value) )
-
-        if( sortby.value !== "NULL" ) {
-            if( sortby.value === "By Uncertainity Score" ) {
+        if( sortby !== "NULL" ) {
+            if( sortby === "By Uncertainity Score" ) {
                 jsondata = jsondata.sort(function(doc1, doc2){
                     return doc2.uncertainity_score - doc1.uncertainity_score;
                 })    
             } 
 
-            else if( sortby.value === "By Name" ) {
+            else if( sortby === "By Name" ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_name - doc2.document_name;
                 } )
             }
 
-            else if( sortby.value === "By Document Size" ) {
+            else if( sortby === "By Document Size" ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_size - doc2.document_size;
                 } )
@@ -67,30 +73,26 @@ export default function OverviewPanel() {
     }
 
     function changeType( event ) {
-        setType( { value : event.target.value } )
+        setType( event.target.value );
     }
     
     function changeSortBy( event ) {
-        setSortBy( { value : event.target.value } )
+        setSortBy( event.target.value );
     }
 
     function changeStatus( event ) {
-        setStatus( { value : event.target.value } )
+        setStatus( event.target.value );
     }
     
     function changeLabel( event ) {
-        setLabel( { value : event.target.value } )
+        setLabel( event.target.value );
     }
 
     function resetFilters() {
-        setType( { value : "NULL" } );
-        setStatus( { value : "NULL" } );
-        setSortBy( { value : "NULL" } );
-        setLabel( { value : "NULL" } );
-    }
-
-    function resetType() {
-        ;
+        setType("NULL");
+        setStatus("NULL");
+        setSortBy("NULL");
+        setLabel("NULL");
     }
 
     function linkButtonClicked( num ) {
@@ -106,6 +108,14 @@ export default function OverviewPanel() {
     }, [type, status, sortby, label]);
 
     if(!documents) return (<> Loading... </>);
+
+    var multiselectcss = {
+        multiselectContainer: {
+            'width': '250px',
+            'float': 'left',
+            'padding': '5px 10px',
+        },
+    }
 
     return (
         <div>
@@ -128,69 +138,98 @@ export default function OverviewPanel() {
 
                 <div className='filterdrop'>
                     <p> Filters: </p>
-                    
-                    <select className='selectsoflow' onChange={ changeType } value={ type.value } id="typedropdown">
+
+                    <Multiselect style={multiselectcss}
+                        showArrow 
+                        placeholder="Document Type"
+                        options={ docTypeArr }
+                        isObject={false} 
+                    />
+
+                    <Multiselect style={multiselectcss}
+                        showArrow 
+                        placeholder="Choose Labels"
+                        options={ labelArr }
+                        isObject={false} 
+                    />
+
+                    <Multiselect style={multiselectcss}
+                        placeholder="Choose status"
+                        options={ statusArr }
+                        singleSelect = {true}
+                        isObject={false} 
+                    />
+
+                    <Multiselect style={multiselectcss}
+                        placeholder="Sort By"
+                        options={ sortByArr }
+                        singleSelect = {true}
+                        isObject={false} 
+                    />
+
+                    {/* <select className='selectsoflow' onChange={ changeStatus } value={ status } >
+                        <option value="NULL" disabled hidden >Review Status</option>
+                        <option value="Manually Reviewer" >Manually Reviewed</option>
+                        <option value="Auto Reviewer" >Auto Reviewed</option>
+                    </select>
+
+                    <select className='selectsoflow' onChange={ changeSortBy } value={ sortby } >
+                        <option value="NULL" disabled hidden >Sort By</option>
+                        <option value="By Name" >Name</option>
+                        <option value="By Uncertainity Score" >Uncertainity Level</option>
+                        <option value="By Document Size" >Document Size</option>
+                    </select>
+
+                    <select className='selectsoflow' onChange={ changeType } value={ type } >
                         <option value="NULL" disabled hidden >Document Type</option>
                         <option value="PDF" >PDF</option>
                         <option value="Picture" >Picture</option>
                         <option value="Text File" >Text File</option>
                     </select>
 
-                    <select className='selectsoflow' onChange={ changeStatus } value={ status.value } id="statusdropdown">
-                        <option value="NULL" disabled hidden >Review Status</option>
-                        <option value="Manually Reviewer" >Manually Reviewed</option>
-                        <option value="Auto Reviewer" >Auto Reviewed</option>
-                    </select>
-
-                    <select className='selectsoflow' onChange={ changeLabel } value={ label.value } id="labeldropdown">
+                    <select className='selectsoflow' onChange={ changeLabel } value={ label } >
                         <option value="NULL" disabled hidden >Label</option>
                         <option value="Label 0" >Label 0</option>
                         <option value="Label 1" >Label 1</option>
                         <option value="Label 2" >Label 2</option>
                         <option value="Label 3" >Label 3</option>
-                    </select>
+                    </select> */}
 
-                    <select className='selectsoflow' onChange={ changeSortBy } value={ sortby.value } id="sortby">
-                        <option value="NULL" disabled hidden >Sort By</option>
-                        <option value="By Name" >Name</option>
-                        <option value="By Uncertainity Score" >Uncertainity Level</option>
-                        <option value="By Document Size" >Document Size</option>
-                    </select>
                 </div>
 
                 <div className='filterbutton' >
                     {
-                        ( type.value === "NULL" ) ?
+                        ( type === "NULL" ) ?
                         <></> :
-                        <button onClick={ () => setType( { value : "NULL" } ) } className='filterlabelbutton'>
-                            { type.value }
+                        <button onClick={ () => setType( "NULL" ) } className='filterlabelbutton'>
+                            { type }
                             <CloseIcon/>
                         </button>
                     }
 
                     {
-                        ( status.value === "NULL" ) ?
+                        ( status === "NULL" ) ?
                         <></> :
-                        <button onClick={ () => setStatus( { value : "NULL" } ) } className='filterlabelbutton'>
-                            { status.value }
+                        <button onClick={ () => setStatus( "NULL" ) } className='filterlabelbutton'>
+                            { status }
                             <CloseIcon/>
                         </button>                        
                     }
 
                     {
-                        ( label.value === "NULL" ) ?
+                        ( label === "NULL" ) ?
                         <></> :
-                        <button onClick={ () => setLabel( { value: "NULL" } ) } className='filterlabelbutton'>
-                            { label.value }
+                        <button onClick={ () => setLabel( "NULL" ) } className='filterlabelbutton'>
+                            { label }
                             <CloseIcon/>
                         </button>                        
                     }
 
                     {
-                        ( sortby.value === "NULL" ) ?
+                        ( sortby === "NULL" ) ?
                         <></> :
-                        <button onClick={ () => setSortBy( { value: "NULL" } ) } className='filterlabelbutton'>
-                            { sortby.value }
+                        <button onClick={ () => setSortBy( "NULL" ) } className='filterlabelbutton'>
+                            { sortby }
                             <CloseIcon />
                         </button>                        
                     }

@@ -85,7 +85,7 @@ export default function ReviewerScreen( { document_id = "NULL" } ) {
                 </div>
             </div>
 
-            <div className="reviwer-dropdown">
+            <div className="reviewer-dropdown">
                 <font> Choose Lable: </font>
                 <select className='selectsoflow' onChange={ changeLabel } value={ label.value } id="labeldropdown">
                     <option value="NULL" disabled hidden > Select Label : </option>
