@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import LaunchIcon from '@mui/icons-material/Launch';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -7,10 +7,10 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';
 import ReviewerScreen from './ReviewerScreen';
 import { Multiselect } from "multiselect-react-dropdown";
+import Pagination from './components/pagination.js'
 
 const BASE_URL_BACKEND = "http://localhost:8000/"
 const BASE_URL_FRONTEND = "http://localhost:3000/"
@@ -18,52 +18,64 @@ const BASE_URL_FRONTEND = "http://localhost:3000/"
 
 export default function OverviewPanel() {
     var [documents, setDocuments] = useState();
-    var [open, setOpen] = useState(false);
+    var [modalOpen, setModalOpen] = useState(false);
     var [currDoc, setCurrDoc] = useState();
+    var [ddChanged, setddChanged] = useState(true);
+    var [pageOfItems, setPageOfItems] = useState([]);
 
-    var labelArr = ["Label 0", "Label 1", "Label 2", "Label 3"];
-    var statusArr = ["Manually Reviewer", "Auto Reviewer"];
-    var docTypeArr = ["PDF", "Picture", "Text File"];
-    var sortByArr = ["By Name", "By Uncertainity Score", "By Document Size"];
+    const labelArr = ["Label 0", "Label 1", "Label 2", "Label 3"];
+    const statusArr = ["Manually Reviewer", "Auto Reviewer"];
+    const docTypeArr = ["PDF", "Picture", "Text File"];
+    const sortByArr = ["By Name", "By Uncertainity Score", "By Document Size"];
 
-    var [type, setType] = useState([]);
-    var [label, setLabel] = useState([]);
-    var [status, setStatus] = useState("NULL");
-    var [sortby, setSortBy] = useState("NULL");
+    var reftype = useRef();
+    var reflabel = useRef();
+    var refstatus = useRef();
+    var refsortby = useRef();
 
     async function fetchtheAPI() {
         const url = BASE_URL_BACKEND + "mainapp/documentlist/";
         var response = await fetch(url);
         var jsondata = await response.json();
 
+        var type = ( reftype.current ) ? reftype.current.getSelectedItems() : [];
+        var label = ( reflabel.current ) ? reflabel.current.getSelectedItems() : [];
+        var sortby = ( refsortby.current ) ? refsortby.current.getSelectedItems() : [];
+        var status = ( refstatus.current ) ? refstatus.current.getSelectedItems() : [];
 
+        if( type.length !== 0 ) {
+            jsondata = jsondata.filter( (doc) => {
+                if( type.includes( doc.document_type ) )
+                    return doc;
+            })
+        }
 
+        if( label.length !== 0 ) {
+            jsondata = jsondata.filter( (doc) => {
+                if( label.includes( doc.reviewed_label_name ) )
+                    return doc;
+            })
+        }
 
-        // if( type !== "NULL" )\
-        //     jsondata = jsondata.filter( (doc) => doc.document_type === type )
-
-        // if( label !== "NULL" ) 
-        //     jsondata = jsondata.filter( (doc) => (doc.reviewed_label_name === label) )
-
-        if( status !== "NULL" ) {
-            var check = Boolean( status === "Manually Reviewer" );
+        if( status.length === 1 ) {
+            var check = Boolean( status[0] === "Manually Reviewer" );
             jsondata = jsondata.filter( (doc) => doc.is_reviewed === check )
         }    
 
-        if( sortby !== "NULL" ) {
-            if( sortby === "By Uncertainity Score" ) {
+        if( sortby.length === 1 ) {
+            if( sortby[0] === "By Uncertainity Score" ) {
                 jsondata = jsondata.sort(function(doc1, doc2){
                     return doc2.uncertainity_score - doc1.uncertainity_score;
                 })    
             } 
 
-            else if( sortby === "By Name" ) {
+            else if( sortby[0] === "By Name" ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_name - doc2.document_name;
                 } )
             }
 
-            else if( sortby === "By Document Size" ) {
+            else if( sortby[0] === "By Document Size" ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_size - doc2.document_size;
                 } )
@@ -72,40 +84,34 @@ export default function OverviewPanel() {
         setDocuments(jsondata);
     }
 
-    function changeType( event ) {
-        setType( event.target.value );
-    }
-    
-    function changeSortBy( event ) {
-        setSortBy( event.target.value );
+    function onSelect( selectedList, selectedItem ) {
+        setddChanged( !ddChanged );
     }
 
-    function changeStatus( event ) {
-        setStatus( event.target.value );
-    }
-    
-    function changeLabel( event ) {
-        setLabel( event.target.value );
+    function onRemove( selectedList, removedItem ) {
+        setddChanged( !ddChanged );
     }
 
     function resetFilters() {
-        setType("NULL");
-        setStatus("NULL");
-        setSortBy("NULL");
-        setLabel("NULL");
+        reftype.current.resetSelectedValues();
+        reflabel.current.resetSelectedValues();
+        refsortby.current.resetSelectedValues();
+        refstatus.current.resetSelectedValues();
+        setddChanged( !ddChanged );
+    }
+
+    function onChangePage(pageOfItems) {
+        setPageOfItems(pageOfItems);
     }
 
     function linkButtonClicked( num ) {
-        setOpen(!open);
+        setModalOpen(!modalOpen);
         setCurrDoc(num);
-        // localStorage.setItem( 'documentid', num );
-        // const url = BASE_URL_FRONTEND + 'reviewer/1';
-        // window.open(url, '_blank');
     }
 
     useEffect(() => {
         fetchtheAPI();
-    }, [type, status, sortby, label]);
+    }, [ddChanged]);
 
     if(!documents) return (<> Loading... </>);
 
@@ -141,6 +147,9 @@ export default function OverviewPanel() {
 
                     <Multiselect style={multiselectcss}
                         showArrow 
+                        ref={ reftype }
+                        onSelect={ onSelect }
+                        onRemove={ onRemove }
                         placeholder="Document Type"
                         options={ docTypeArr }
                         isObject={false} 
@@ -148,12 +157,18 @@ export default function OverviewPanel() {
 
                     <Multiselect style={multiselectcss}
                         showArrow 
+                        ref = { reflabel }
+                        onSelect={ onSelect }
+                        onRemove={ onRemove }
                         placeholder="Choose Labels"
                         options={ labelArr }
                         isObject={false} 
                     />
 
                     <Multiselect style={multiselectcss}
+                        ref = { refstatus }
+                        onSelect={ onSelect }
+                        onRemove={ onRemove }
                         placeholder="Choose status"
                         options={ statusArr }
                         singleSelect = {true}
@@ -161,79 +176,14 @@ export default function OverviewPanel() {
                     />
 
                     <Multiselect style={multiselectcss}
+                        ref = { refsortby }
+                        onSelect={ onSelect }
+                        onRemove={ onRemove }
                         placeholder="Sort By"
                         options={ sortByArr }
                         singleSelect = {true}
                         isObject={false} 
                     />
-
-                    {/* <select className='selectsoflow' onChange={ changeStatus } value={ status } >
-                        <option value="NULL" disabled hidden >Review Status</option>
-                        <option value="Manually Reviewer" >Manually Reviewed</option>
-                        <option value="Auto Reviewer" >Auto Reviewed</option>
-                    </select>
-
-                    <select className='selectsoflow' onChange={ changeSortBy } value={ sortby } >
-                        <option value="NULL" disabled hidden >Sort By</option>
-                        <option value="By Name" >Name</option>
-                        <option value="By Uncertainity Score" >Uncertainity Level</option>
-                        <option value="By Document Size" >Document Size</option>
-                    </select>
-
-                    <select className='selectsoflow' onChange={ changeType } value={ type } >
-                        <option value="NULL" disabled hidden >Document Type</option>
-                        <option value="PDF" >PDF</option>
-                        <option value="Picture" >Picture</option>
-                        <option value="Text File" >Text File</option>
-                    </select>
-
-                    <select className='selectsoflow' onChange={ changeLabel } value={ label } >
-                        <option value="NULL" disabled hidden >Label</option>
-                        <option value="Label 0" >Label 0</option>
-                        <option value="Label 1" >Label 1</option>
-                        <option value="Label 2" >Label 2</option>
-                        <option value="Label 3" >Label 3</option>
-                    </select> */}
-
-                </div>
-
-                <div className='filterbutton' >
-                    {
-                        ( type === "NULL" ) ?
-                        <></> :
-                        <button onClick={ () => setType( "NULL" ) } className='filterlabelbutton'>
-                            { type }
-                            <CloseIcon/>
-                        </button>
-                    }
-
-                    {
-                        ( status === "NULL" ) ?
-                        <></> :
-                        <button onClick={ () => setStatus( "NULL" ) } className='filterlabelbutton'>
-                            { status }
-                            <CloseIcon/>
-                        </button>                        
-                    }
-
-                    {
-                        ( label === "NULL" ) ?
-                        <></> :
-                        <button onClick={ () => setLabel( "NULL" ) } className='filterlabelbutton'>
-                            { label }
-                            <CloseIcon/>
-                        </button>                        
-                    }
-
-                    {
-                        ( sortby === "NULL" ) ?
-                        <></> :
-                        <button onClick={ () => setSortBy( "NULL" ) } className='filterlabelbutton'>
-                            { sortby }
-                            <CloseIcon />
-                        </button>                        
-                    }
-
                 </div>
             </div>
 
@@ -251,7 +201,7 @@ export default function OverviewPanel() {
                 </thead>
                 <tbody>
                     {
-                        documents.map( (doc, i) => {
+                        pageOfItems.map( (doc, i) => {
                             return <tr key={i} className={ (currDoc === doc.id ) ? "rowShow" : "" } >
                                 <td> { i + 1 } </td>
 
@@ -289,11 +239,15 @@ export default function OverviewPanel() {
                     }
                 </tbody>
             </table>
+            
+            <div className='paging'>
+                <Pagination items={ documents } onChangePage={ onChangePage } />
+            </div>
 
             {
-                ( open ) ? 
-                <div className={ (open) ? "modal open" : "modal" }>
-                    <div className="modal-overlay" onClick={ () => setOpen(!open) } ></div>
+                ( modalOpen ) ? 
+                <div className={ (modalOpen) ? "modal open" : "modal" }>
+                    <div className="modal-overlay" onClick={ () => setModalOpen(!modalOpen) } ></div>
                     <div className="modal-card">
                         <div className="modal-body">
                         <div className="modal-content">

@@ -190,14 +190,20 @@ body, html {
   max-width: calc(100vw - 1rem);
   border-radius: 10px;
   overflow: hidden;
-  width: 85%;
-  height: 100%;
+  width: 80%;
   background: white;
 }
 
-.modal-content{
-  padding: 1rem;
+.pagination {
+  margin: 20px;
+  border-radius: 8px;
 }
+
+.paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;}
+
 
 table {
   border: 1px solid #ccc;

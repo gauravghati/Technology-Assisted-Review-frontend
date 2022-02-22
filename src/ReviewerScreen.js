@@ -3,20 +3,15 @@ import PdfViewer from './components/PdfViewer';
 
 const BASE_URL_BACKEND = "http://localhost:8000/"
 
-export default function ReviewerScreen( { document_id = "NULL" } ) {
+export default function ReviewerScreen({ document_id = "NULL" }) {
     var [document, setDocument] = useState();
-    var [label, setLabel] = useState( { value : "NULL" } );
-    var [change, setChange] = useState(true);
-
-    if( localStorage.getItem('documentid') ) {
-        document_id = localStorage.getItem('documentid');
-        localStorage.removeItem('documentid');
-    }
+    var [label, setLabel] = useState("NULL");
+    var [labelChanged, setLabelChange] = useState(true);
 
     async function fetchtheAPI() {
         const speURL = BASE_URL_BACKEND + "mainapp/getspecificdoc/"
         const uncerURL = BASE_URL_BACKEND + "mainapp/getmostuncertaindoc/"
-
+    
         var requestOptions = {
             method : 'POST',
             headers : { 
@@ -31,10 +26,10 @@ export default function ReviewerScreen( { document_id = "NULL" } ) {
         if( document_id !== "NULL" )
             doc = await fetch(speURL, requestOptions);
         else doc = await fetch(uncerURL);
-
+    
         var jsondoc = await doc.json();
         setDocument(jsondoc);
-    }
+    }    
 
     async function updateDatabase() {
         const updateURL = BASE_URL_BACKEND + "mainapp/updatedoc/";
@@ -48,24 +43,24 @@ export default function ReviewerScreen( { document_id = "NULL" } ) {
             },
             body : JSON.stringify({ 
                 "document_id" : document_id,
-                "reviewed_label_name" : label.value
+                "reviewed_label_name" : label
             })
         }
         await fetch(updateURL, requestOptions);
     }
 
     function changeLabel( event ) {
-        setLabel( { value : event.target.value } );
+        setLabel(event.target.value);
     }
 
     useEffect(() => {
         fetchtheAPI();
-    }, [change]);
+    }, [labelChanged]);
 
     function nextPage() {
-        if( label.value !== "NULL" ) {
+        if( label !== "NULL" ) {
             updateDatabase();
-            setChange(!change);
+            setLabelChange(!labelChanged);
         }
         else {
             // havn't thought yet
@@ -87,7 +82,7 @@ export default function ReviewerScreen( { document_id = "NULL" } ) {
 
             <div className="reviewer-dropdown">
                 <font> Choose Lable: </font>
-                <select className='selectsoflow' onChange={ changeLabel } value={ label.value } id="labeldropdown">
+                <select className='selectsoflow' onChange={ changeLabel } value={ label } id="labeldropdown">
                     <option value="NULL" disabled hidden > Select Label : </option>
                     <option value="Label 0" >Label 0</option>
                     <option value="Label 1" >Label 1</option>
