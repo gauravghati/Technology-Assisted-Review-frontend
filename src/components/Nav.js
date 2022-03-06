@@ -2,7 +2,6 @@ import React from 'react'
 
 export default function Nav() {
     var num = "1";
-
     if( localStorage.getItem('navnum') ) {
         num = localStorage.getItem('navnum');
         localStorage.removeItem('navnum');
@@ -23,7 +22,7 @@ export default function Nav() {
 
     return (
         <nav className="w3-top">
-            <div className="w3-bar w3-white w3-card" id="myNavbar">
+            <div className="w3-white w3-card" id="myNavbar">
                 <a href={process.env.PUBLIC_URL + '/'} className={ veritasWide }> VERITAS </a>
                 <div className="w3-right w3-hide-small">                    
                     <a href={process.env.PUBLIC_URL + '/admin/1'} onClick={ () => changeNum("1") } className = { activeAdmin } >

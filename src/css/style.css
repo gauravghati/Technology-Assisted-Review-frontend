@@ -11,43 +11,28 @@ body, html {
   line-height: 1.8;
 }
 
-.w3-bar .w3-button {
-  padding: 16px;
-}
-
-.w3-button:hover{
-  color:#000!important;
-  background-color:#ccc!important
-}
-
-.w3-button-active {
-  color:#000!important;
-  background-color:#ccc!important
-}
-
-.button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 16px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
+.buttonNext {
+  border: 0px;
+  display: inline-flex;
+  vertical-align: middle;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  border-radius: 3px;
+  line-height: 20px;
+  transition: all 0.18s ease-in-out 0s;
+  outline: 0px;
   cursor: pointer;
+  box-shadow: rgb(38 50 56 / 20%) 0px 0px 0px 1px inset;
+  color: rgb(69, 90, 100);
+  padding: 10px 15px 10px 15px;
+  margin: 10px;
+  font-size: 20px;
 }
 
-.button1 {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #4CAF50;
-}
-
-.button1:hover {
-  background-color: #4CAF50;
-  color: white;
+.buttonNext:hover {
+  background-color: #ccc;
 }
 
 .top-next-prev-button {
@@ -72,6 +57,12 @@ body, html {
   float: right;
 }
 
+.admin-upload-button {
+  position : fixed;
+  bottom: 30px;
+  right: 50px;
+}
+
 /* Size the viewer as desired. In this case, we fill the browser window. */
 #viewer-container {
   height: 100%;
@@ -92,7 +83,7 @@ body, html {
   width: fit-content;
 }
 
-.search {
+.search_box {
   /* border: 1px solid #000; */
   width: 30% ;
   padding-top: 90px;
@@ -100,22 +91,19 @@ body, html {
   float: right;
 }
 
-.filterbutton {
-  /* border: 1px solid #000; */
-  padding-left: 20px;
-  width: 50%;
-}
-
-.filterlabelbutton {
-  margin-right: 50px;
+.search_input {
+  height: 50px;
+  margin-bottom: 20px;
+  margin-right: 20px;
 }
 
 .filterdrop {
   /* border: 1px solid #000; */
+  padding-top: 30px;
   width: 60%;
 }
 
-.filter-dropdowns {
+.filterAndSearch {
   /* border: 1px solid #000; */
   padding-left: 50px;
   padding-bottom: 50px;
@@ -124,8 +112,27 @@ body, html {
   float : left;
 }
 
-.pickrandom {
-  float: right;
+.overviewButtons {
+  border: 0px;
+  display: inline-flex;
+  vertical-align: middle;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  border-radius: 3px;
+  line-height: 20px;
+  transition: all 0.18s ease-in-out 0s;
+  outline: 0px;
+  cursor: pointer;
+  box-shadow: rgb(38 50 56 / 20%) 0px 0px 0px 1px inset;
+  color: rgb(69, 90, 100);
+  padding: 5px 15px 5px 15px;
+  font-size: 20px;  
+}
+
+.overviewButtons:hover {
+  background-color: #ccc;
 }
 
 .textpickrandom {
@@ -142,8 +149,19 @@ body, html {
   float: right;
 }
 
+a:hover { text-decoration: none; }
+
+.w3-button { 
+  padding: 16px 20px;
+  height: 60px;
+}
+
 .rowShow {
   background-color: #ccc
+}
+
+.chooseFolder {
+  padding: 30px;
 }
 
 .modal {

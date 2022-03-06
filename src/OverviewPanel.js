@@ -15,13 +15,13 @@ import Pagination from './components/pagination.js'
 const BASE_URL_BACKEND = "http://localhost:8000/"
 const BASE_URL_FRONTEND = "http://localhost:3000/"
 
-
 export default function OverviewPanel() {
     var [documents, setDocuments] = useState();
     var [modalOpen, setModalOpen] = useState(false);
-    var [currDoc, setCurrDoc] = useState();
+    var [currDocIdx, setCurrDocIdx] = useState();
     var [ddChanged, setddChanged] = useState(true);
     var [pageOfItems, setPageOfItems] = useState([]);
+    var [documentIndexList, setDocumentIndexList] = useState([]);
 
     const labelArr = ["Label 0", "Label 1", "Label 2", "Label 3"];
     const statusArr = ["Manually Reviewer", "Auto Reviewer"];
@@ -81,6 +81,13 @@ export default function OverviewPanel() {
                 } )
             }
         }
+
+        // creating documentIndexList to pass it to Reviewer's screen
+        var docIdxList = [];
+        for( let i = 0; i < jsondata.length; i++ )
+            docIdxList.push( jsondata[i].id );
+
+        setDocumentIndexList( docIdxList );
         setDocuments(jsondata);
     }
 
@@ -106,12 +113,12 @@ export default function OverviewPanel() {
 
     function linkButtonClicked( num ) {
         setModalOpen(!modalOpen);
-        setCurrDoc(num);
+        setCurrDocIdx( num );
     }
 
     useEffect(() => {
         fetchtheAPI();
-    }, [ddChanged]);
+    }, [ddChanged, modalOpen]);
 
     if(!documents) return (<> Loading... </>);
 
@@ -119,27 +126,23 @@ export default function OverviewPanel() {
         multiselectContainer: {
             'width': '250px',
             'float': 'left',
-            'padding': '5px 10px',
+            'padding': '5px 10px'
         },
     }
 
     return (
         <div>
-            <div className="filter-dropdowns">
-                <div className="search">
-                    <input type="text" placeholder="Search Documents" />
-                    <div className="pickrandom" >
-                        <button onClick={ () => linkButtonClicked( "3" ) } >
-                            <ShuffleIcon/>
-                            <font className="textpickrandom" >Pick Random</font>
-                        </button>
-                    </div>
-                    <div className="resetbutton" >
-                        <button onClick={resetFilters} >
-                            <RestartAltIcon/>
-                            <font className="textpickrandom" >Reset Filters</font>
-                        </button>
-                    </div>
+            <div className="filterAndSearch">
+                <div className="search_box">
+                    <input className='search_input' type="text" placeholder="Search Documents" />
+                    <button className='overviewButtons' onClick={ () => linkButtonClicked( Math.floor( Math.random() * documentIndexList.length ) ) } >
+                        <ShuffleIcon/>
+                        <font className="textpickrandom" >Pick Random</font>
+                    </button>
+                    <button className='overviewButtons' onClick={resetFilters} >
+                        <RestartAltIcon/>
+                        <font className="textpickrandom" >Reset Filters</font>
+                    </button>
                 </div>
 
                 <div className='filterdrop'>
@@ -202,7 +205,7 @@ export default function OverviewPanel() {
                 <tbody>
                     {
                         pageOfItems.map( (doc, i) => {
-                            return <tr key={i} className={ (currDoc === doc.id ) ? "rowShow" : "" } >
+                            return <tr key={i} className={ (currDocIdx === i ) ? "rowShow" : "" } >
                                 <td> { i + 1 } </td>
 
                                 <td> { 
@@ -228,7 +231,7 @@ export default function OverviewPanel() {
                                 } </td>
 
                                 <td> 
-                                    <Button onClick={ () => linkButtonClicked( doc.id ) } >
+                                    <Button onClick={ () => linkButtonClicked( i ) } >
                                     {
                                         ( doc.is_reviewed ) ? <EditIcon/> : <LaunchIcon/>
                                     }
@@ -239,7 +242,7 @@ export default function OverviewPanel() {
                     }
                 </tbody>
             </table>
-            
+
             <div className='paging'>
                 <Pagination items={ documents } onChangePage={ onChangePage } />
             </div>
@@ -251,13 +254,18 @@ export default function OverviewPanel() {
                     <div className="modal-card">
                         <div className="modal-body">
                         <div className="modal-content">
-                            <ReviewerScreen document_id={ currDoc } />
+                            <ReviewerScreen 
+                                documentIndexList={ documentIndexList }
+                                currDocIdx = { currDocIdx } 
+                                closeModal={ () => setModalOpen(!modalOpen) }
+                                setCurrDocIdx = { (num) => setCurrDocIdx(num) }
+                                refreshPage = { () => setddChanged( !ddChanged ) }
+                            />
                         </div>
                         </div>
                     </div>
                 </div> : <div></div>
             }
-
         </div>
     )
 }
