@@ -1,5 +1,4 @@
 import React from "react";
-import ReviewerScreen from "./ReviewerScreen";
 import OverviewPanel from "./OverviewPanel";
 import AdminTraining from "./AdminTraining";
 import Nav from "./components/Nav";
@@ -15,7 +14,6 @@ function App() {
           <Nav num = "1" />
           <Routes>
             <Route path="/admin/1" element = { <AdminTraining/> } />
-            <Route path="/reviewer/1" element = { <ReviewerScreen/> } />
             <Route path="/reviewer/2" element = { <OverviewPanel/> } />
           </Routes>
         </div>

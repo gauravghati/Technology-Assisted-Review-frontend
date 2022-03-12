@@ -6,56 +6,49 @@ import { Chart } from "react-google-charts";
 
 const BASE_URL_BACKEND = "http://localhost:8000/"
 
-export default function ReviewerScreen( props ) {    
+export default function ReviewerScreenModal( props ) {    
+    var [document, setDocument] = useState();
+    var [label, setLabel] = useState("NULL");
+
     var documentIndexList = props.documentIndexList;
     var currDocIdx = props.currDocIdx;
-
     var document_id = documentIndexList[ currDocIdx ];
 
     const pieOptions = {
         title: "Model Predictions",
-        is3D: true,        
+        is3D: true,
     };
-
-    var [document, setDocument] = useState();
-    var [label, setLabel] = useState("NULL");
 
     async function fetchtheAPI() {
         const speURL = BASE_URL_BACKEND + "mainapp/getspecificdoc/"
-        // const uncerURL = BASE_URL_BACKEND + "mainapp/getmostuncertaindoc/"
 
         var requestOptions = {
             method : 'POST',
             headers : { 
-                'Content-Type': 'application/json' 
+                'Content-Type': 'application/json'
             },
-            body : JSON.stringify({ 
+            body : JSON.stringify({
                 "document_id" : document_id
             })
         }
 
         var doc = await fetch(speURL, requestOptions);
-        // if( document_id !== "NULL" )
-        //     doc = await fetch(speURL, requestOptions);
-        // else doc = await fetch(uncerURL);
 
         var jsondoc = await doc.json();
         if( jsondoc.is_reviewed )
             setLabel( jsondoc.reviewed_label_name );
 
-        console.log( jsondoc.length );
         setDocument(jsondoc);
-    }    
+    }
 
     async function updateDatabase() {
         const updateURL = BASE_URL_BACKEND + "mainapp/updatedoc/";
-
         var requestOptions = {
             method : 'POST',
-            headers : { 
-                'Content-Type': 'application/json' 
+            headers : {
+                'Content-Type': 'application/json'
             },
-            body : JSON.stringify({ 
+            body : JSON.stringify({
                 "document_id" : document_id,
                 "reviewed_label_name" : label
             })
@@ -121,21 +114,25 @@ export default function ReviewerScreen( props ) {
                 </div>
 
                 { document.is_reviewed ? 
-                    <font>This document is Already Reviewed</font> : 
-                    <Chart
-                        chartType="PieChart"
-                        data={ [
-                                ["Label", "Percentage"],
-                                ["Label 1", document.class_a_predit_percentage],
-                                ["Label 2", document.class_b_predit_percentage],
-                                ["Label 3", document.class_c_predit_percentage],
-                                ["Label 4", document.class_d_predit_percentage],
-                            ] 
-                        }
-                        options={pieOptions}
-                        width={"100%"}
-                        height={"450px"}
-                    />
+                    <font>This document is Already Reviewed with label : { document.reviewed_label_name } </font> 
+                    : 
+                    <div>
+                        <font>Predicted Label : { document.predicted_label_name } </font>
+                        <Chart
+                            chartType="PieChart"
+                            data={ [
+                                    ["Label", "Percentage"],
+                                    ["Label 0", document.class_a_predit_percentage],
+                                    ["Label 1", document.class_b_predit_percentage],
+                                    ["Label 2", document.class_c_predit_percentage],
+                                    ["Label 3", document.class_d_predit_percentage],
+                                ] 
+                            }
+                            options={pieOptions}
+                            width={"100%"}
+                            height={"430px"}
+                        />
+                    </div>
                 }
                 <font> <br/> Choose Lable: </font>
                 <select className='selectsoflow' onChange={ changeLabel } value={ label } id="labeldropdown">
@@ -150,7 +147,6 @@ export default function ReviewerScreen( props ) {
             <div className='pdf-container' >
                 <PdfViewer sourceDocument = { document.document_file } />
             </div>
-
 
             <div className="bottom-submit-button">
                 <div className="inner-top-next-prev-button">

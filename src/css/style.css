@@ -63,6 +63,12 @@ body, html {
   right: 50px;
 }
 
+.nonefile{
+  width: 30%;  
+  margin: auto;
+  font-size: 30px;
+}
+
 /* Size the viewer as desired. In this case, we fill the browser window. */
 #viewer-container {
   height: 100%;

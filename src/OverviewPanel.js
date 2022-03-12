@@ -8,9 +8,10 @@ import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import EditIcon from '@mui/icons-material/Edit';
 import { Button } from '@mui/material';
-import ReviewerScreen from './ReviewerScreen';
+import ReviewerScreenModal from './ReviewerScreenModal';
 import { Multiselect } from "multiselect-react-dropdown";
 import Pagination from './components/pagination.js'
+import DocumentQueue from './init_variable';
 
 const BASE_URL_BACKEND = "http://localhost:8000/"
 const BASE_URL_FRONTEND = "http://localhost:3000/"
@@ -52,7 +53,8 @@ export default function OverviewPanel() {
 
         if( label.length !== 0 ) {
             jsondata = jsondata.filter( (doc) => {
-                if( label.includes( doc.reviewed_label_name ) )
+                var showLabel = ( doc.is_reviewed ) ? doc.reviewed_label_name : doc.predicted_label_name;
+                if( label.includes( showLabel ) )
                     return doc;
             })
         }
@@ -110,6 +112,11 @@ export default function OverviewPanel() {
     function onChangePage(pageOfItems) {
         setPageOfItems(pageOfItems);
     }
+    
+    function updateLabelAfterModelClose() {
+        setddChanged(!ddChanged);
+        setModalOpen(!modalOpen);
+    }
 
     function linkButtonClicked( num ) {
         setModalOpen(!modalOpen);
@@ -118,7 +125,7 @@ export default function OverviewPanel() {
 
     useEffect(() => {
         fetchtheAPI();
-    }, [ddChanged, modalOpen]);
+    }, [ddChanged]);
 
     if(!documents) return (<> Loading... </>);
 
@@ -223,7 +230,7 @@ export default function OverviewPanel() {
 
                                 <td>{
                                     ( doc.is_reviewed ) ? 
-                                    doc.reviewed_label_name : "-"
+                                    doc.reviewed_label_name : doc.predicted_label_name
                                 } </td>
 
                                 <td> {
@@ -244,19 +251,19 @@ export default function OverviewPanel() {
             </table>
 
             <div className='paging'>
-                <Pagination items={ documents } onChangePage={ onChangePage } />
+                <Pagination items={ documents } onChangePage={ onChangePage } pageSize="10"  />
             </div>
 
             {
                 ( modalOpen ) ? 
                 <div className={ (modalOpen) ? "modal open" : "modal" }>
-                    <div className="modal-overlay" onClick={ () => setModalOpen(!modalOpen) } ></div>
+                    <div className="modal-overlay" onClick={ () => updateLabelAfterModelClose() } ></div>
                     <div className="modal-card">
                         <div className="modal-body">
                         <div className="modal-content">
-                            <ReviewerScreen 
+                            <ReviewerScreenModal
                                 documentIndexList={ documentIndexList }
-                                currDocIdx = { currDocIdx } 
+                                currDocIdx = { currDocIdx }
                                 closeModal={ () => setModalOpen(!modalOpen) }
                                 setCurrDocIdx = { (num) => setCurrDocIdx(num) }
                                 refreshPage = { () => setddChanged( !ddChanged ) }
