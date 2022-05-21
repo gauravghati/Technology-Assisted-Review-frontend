@@ -35,14 +35,14 @@ export default function AdminTraining() {
         <div>
             <div className="filterAndSearch">
                 <input className='chooseFolder'
-                    directory=""
-                    webkitdirectory=""
+                    // directory=""
+                    // webkitdirectory=""
                     type="file"
                     onChange={ handleFile }
                 />
             </div>
 
-            { ( files.length == 0 ) ?  
+            { ( files.length === 0 ) ?  
                 <div className="nonefile"> 
                     Choose folder to upload files
                 </div> : 

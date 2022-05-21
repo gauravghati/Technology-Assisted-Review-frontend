@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react';
 import LaunchIcon from '@mui/icons-material/Launch';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -11,23 +11,48 @@ import { Button } from '@mui/material';
 import ReviewerScreenModal from './ReviewerScreenModal';
 import { Multiselect } from "multiselect-react-dropdown";
 import Pagination from './components/pagination.js'
-import DocumentQueue from './init_variable';
 
-const BASE_URL_BACKEND = "http://localhost:8000/"
-const BASE_URL_FRONTEND = "http://localhost:3000/"
+const BASE_URL_BACKEND = "http://localhost:8000/";
+const BASE_URL_FRONTEND = "http://localhost:3000/";
+
+const TYPES = {
+    PDF: "PDF",
+    TEXT: "Text",
+    PIC: "Picture",
+};  
+
+const LABELS = {
+    NULL: "null",
+    LABEL0: "Label 0",
+    LABEL1: "Label 1", 
+    LABEL2: "Label 2",
+    LABEL3: "Label 3",   
+};
+
+const SORT_BY = {
+    NAME: "Name",
+    UNCERTAINITY_SCORE: "Uncertainity Score",
+    DOCUMENT_SIZE: "Document Size"
+};
+
+const STATUS = {
+    MANUALLY_REVIEWED: "Manually Reviewed",
+    AUTO_REVIEWED: "Auto Reviewed",
+}
 
 export default function OverviewPanel() {
     var [documents, setDocuments] = useState();
     var [modalOpen, setModalOpen] = useState(false);
-    var [currDocIdx, setCurrDocIdx] = useState();
+    var [currDocId, setCurrDocId] = useState();
+    var [currDocIndex, setCurrDocIndex] = useState();
     var [ddChanged, setddChanged] = useState(true);
     var [pageOfItems, setPageOfItems] = useState([]);
     var [documentIndexList, setDocumentIndexList] = useState([]);
 
-    const labelArr = ["Label 0", "Label 1", "Label 2", "Label 3"];
-    const statusArr = ["Manually Reviewer", "Auto Reviewer"];
-    const docTypeArr = ["PDF", "Picture", "Text File"];
-    const sortByArr = ["By Name", "By Uncertainity Score", "By Document Size"];
+    const labelArr = [LABELS.LABEL0, LABELS.LABEL1, LABELS.LABEL2, LABELS.LABEL3];
+    const statusArr = [STATUS.MANUALLY_REVIEWED, STATUS.AUTO_REVIEWED];
+    const docTypeArr = [TYPES.PDF, TYPES.PIC, TYPES.TEXT];
+    const sortByArr = [SORT_BY.NAME, SORT_BY.UNCERTAINITY_SCORE, SORT_BY.DOCUMENT_SIZE];
 
     var reftype = useRef();
     var reflabel = useRef();
@@ -60,24 +85,24 @@ export default function OverviewPanel() {
         }
 
         if( status.length === 1 ) {
-            var check = Boolean( status[0] === "Manually Reviewer" );
+            var check = Boolean( status[0] === STATUS.MANUALLY_REVIEWED );
             jsondata = jsondata.filter( (doc) => doc.is_reviewed === check )
         }    
 
         if( sortby.length === 1 ) {
-            if( sortby[0] === "By Uncertainity Score" ) {
+            if( sortby[0] === SORT_BY.UNCERTAINITY_SCORE ) {
                 jsondata = jsondata.sort(function(doc1, doc2){
                     return doc2.uncertainity_score - doc1.uncertainity_score;
                 })    
             } 
 
-            else if( sortby[0] === "By Name" ) {
+            else if( sortby[0] === SORT_BY.NAME ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_name - doc2.document_name;
                 } )
             }
 
-            else if( sortby[0] === "By Document Size" ) {
+            else if( sortby[0] === SORT_BY.DOCUMENT_SIZE ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
                     return doc1.document_size - doc2.document_size;
                 } )
@@ -86,8 +111,10 @@ export default function OverviewPanel() {
 
         // creating documentIndexList to pass it to Reviewer's screen
         var docIdxList = [];
-        for( let i = 0; i < jsondata.length; i++ )
-            docIdxList.push( jsondata[i].id );
+        for( let i = 0; i < jsondata.length; i++ ) {
+            var temp_id = jsondata[i].auto_id;
+            docIdxList.push( temp_id );
+        }
 
         setDocumentIndexList( docIdxList );
         setDocuments(jsondata);
@@ -120,7 +147,11 @@ export default function OverviewPanel() {
 
     function linkButtonClicked( num ) {
         setModalOpen(!modalOpen);
-        setCurrDocIdx( num );
+        var temp_idx = documents.findIndex((doc) => {
+            return (doc.auto_id === num);
+        });
+        setCurrDocId( num );
+        setCurrDocIndex( temp_idx )
     }
 
     useEffect(() => {
@@ -211,13 +242,13 @@ export default function OverviewPanel() {
                 </thead>
                 <tbody>
                     {
-                        pageOfItems.map( (doc, i) => {
-                            return <tr key={i} className={ (currDocIdx === i ) ? "rowShow" : "" } >
+                        pageOfItems.slice(0, 10).map( (doc, i) => {
+                            return <tr key={i} className={ (currDocId === doc.auto_id ) ? "rowShow" : "" } >
                                 <td> { i + 1 } </td>
 
                                 <td> { 
-                                    ( doc.document_type === "PDF" ) ?  <PictureAsPdfIcon/> :
-                                    ( ( doc.document_type === "Picture" ) ? <InsertPhotoIcon/> : <TextSnippetIcon/> )
+                                    ( doc.document_type === TYPES.PDF ) ?  <PictureAsPdfIcon/> :
+                                    ( ( doc.document_type === TYPES.PIC ) ? <InsertPhotoIcon/> : <TextSnippetIcon/> )
                                 } </td>
 
                                 <td>{ 
@@ -229,7 +260,7 @@ export default function OverviewPanel() {
                                 } </td>
 
                                 <td>{
-                                    ( doc.is_reviewed ) ? 
+                                    ( doc.is_reviewed ) ?
                                     doc.reviewed_label_name : doc.predicted_label_name
                                 } </td>
 
@@ -238,8 +269,7 @@ export default function OverviewPanel() {
                                 } </td>
 
                                 <td> 
-                                    <Button onClick={ () => linkButtonClicked( i ) } >
-                                    {
+                                    <Button onClick={ () => linkButtonClicked( doc.auto_id ) } > {
                                         ( doc.is_reviewed ) ? <EditIcon/> : <LaunchIcon/>
                                     }
                                     </Button>
@@ -263,9 +293,9 @@ export default function OverviewPanel() {
                         <div className="modal-content">
                             <ReviewerScreenModal
                                 documentIndexList={ documentIndexList }
-                                currDocIdx = { currDocIdx }
+                                currDocIdx = { currDocIndex }
                                 closeModal={ () => setModalOpen(!modalOpen) }
-                                setCurrDocIdx = { (num) => setCurrDocIdx(num) }
+                                setCurrDocIdx = { (num) => setCurrDocIndex(num) }
                                 refreshPage = { () => setddChanged( !ddChanged ) }
                             />
                         </div>

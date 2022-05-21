@@ -3,16 +3,17 @@ import PdfViewer from './components/PdfViewer';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Chart } from "react-google-charts";
+import LABELS from './OverviewPanel'
 
 const BASE_URL_BACKEND = "http://localhost:8000/"
 
 export default function ReviewerScreenModal( props ) {    
     var [document, setDocument] = useState();
-    var [label, setLabel] = useState("NULL");
+    var [label, setLabel] = useState(LABELS.NULL);
 
     var documentIndexList = props.documentIndexList;
     var currDocIdx = props.currDocIdx;
-    var document_id = documentIndexList[ currDocIdx ];
+    var document_id = documentIndexList[ currDocIdx ]
 
     const pieOptions = {
         title: "Model Predictions",
@@ -37,6 +38,7 @@ export default function ReviewerScreenModal( props ) {
         var jsondoc = await doc.json();
         if( jsondoc.is_reviewed )
             setLabel( jsondoc.reviewed_label_name );
+        else setLabel( LABELS.NULL )
 
         setDocument(jsondoc);
     }
@@ -65,10 +67,12 @@ export default function ReviewerScreenModal( props ) {
     }, [currDocIdx]);
 
     function navPage( val ) {
-        if( label !== "NULL" ) {
+        if( label !== LABELS.NULL ) {
             updateDatabase();
-            setLabel("NULL");
-            val ? ++currDocIdx : --currDocIdx;
+            if( currDocIdx < documentIndexList.length - 1 && val )
+                ++currDocIdx
+            else if( currDocIdx > 0 && !val ) 
+                --currDocIdx;
             props.setCurrDocIdx( currDocIdx );
         }
         else {
@@ -77,9 +81,8 @@ export default function ReviewerScreenModal( props ) {
     }
 
     function submitAndClose() {
-        if( label !== "NULL" ) {
+        if( label !== LABELS.NULL ) {
             updateDatabase();
-            setLabel("NULL");
             props.closeModal();
             props.refreshPage();
         }
@@ -136,11 +139,11 @@ export default function ReviewerScreenModal( props ) {
                 }
                 <font> <br/> Choose Lable: </font>
                 <select className='selectsoflow' onChange={ changeLabel } value={ label } id="labeldropdown">
-                    <option value="NULL" disabled hidden > Select Label : </option>
-                    <option value="Label 0" >Label 0</option>
-                    <option value="Label 1" >Label 1</option>
-                    <option value="Label 2" >Label 2</option>
-                    <option value="Label 3" >Label 3</option>
+                    <option value={ LABELS.NULL } hidden > Select Label </option>
+                    <option value={ LABELS.LABEL0 } >Label 0</option>
+                    <option value={ LABELS.LABEL1 } >Label 1</option>
+                    <option value={ LABELS.LABEL2 } >Label 2</option>
+                    <option value={ LABELS.LABEL3 } >Label 3</option>
                 </select>
             </div>
 
