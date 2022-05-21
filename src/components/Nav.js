@@ -25,13 +25,13 @@ export default function Nav() {
             <div className="w3-white w3-card" id="myNavbar">
                 <a href={process.env.PUBLIC_URL + '/'} className={ veritasWide }> VERITAS </a>
                 <div className="w3-right w3-hide-small">
-                    <a href={process.env.PUBLIC_URL + '/admin/1'} onClick={ () => changeNum("1") } className = { activeAdmin } >
+                    <a href={process.env.PUBLIC_URL + '/admin'} onClick={ () => changeNum("1") } className = { activeAdmin } >
                         ADMIN 
                     </a>
-                    {/* <a href={process.env.PUBLIC_URL + '/reviewer/1'} onClick={ () => changeNum("2") } className = { activeReviewerOne } >
-                        MANUAL REVIEWER 
-                    </a> */}
-                    <a href={process.env.PUBLIC_URL + '/reviewer/2'} onClick={ () => changeNum("3") } className = { activeReviewerTwo } >
+                    <a href={process.env.PUBLIC_URL + '/result'} onClick={ () => changeNum("2") } className = { activeAdmin } >
+                        RESULT
+                    </a>
+                    <a href={process.env.PUBLIC_URL + '/reviewer'} onClick={ () => changeNum("3") } className = { activeReviewerTwo } >
                         OVERVIEW PANEL
                     </a>
                 </div>

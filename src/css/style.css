@@ -11,6 +11,32 @@ body, html {
   line-height: 1.8;
 }
 
+.twopie {
+    /* border: 1px solid #000; */
+    float: right;
+}
+
+.histo {
+    padding-left: 100px;
+    padding-top: 50px;
+}
+
+.adminBtns {
+    margin: 50px 0px 0px 400px;
+    padding-bottom: 50px;
+}
+
+.adminBtns > * {
+    margin-right: 30px;
+}
+
+
+.resultDetails {
+    font-size: 30px;
+    padding-left: 100px;
+    padding-top: 100px;
+}
+
 .buttonNext {
   border: 0px;
   display: inline-flex;

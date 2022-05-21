@@ -5,7 +5,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Chart } from "react-google-charts";
 import LABELS from './OverviewPanel'
 
-const BASE_URL_BACKEND = "http://localhost:8000/"
+import { BASE_URL_BACKEND } from './variables'
 
 export default function ReviewerScreenModal( props ) {    
     var [document, setDocument] = useState();
@@ -76,7 +76,7 @@ export default function ReviewerScreenModal( props ) {
             props.setCurrDocIdx( currDocIdx );
         }
         else {
-            // havn't thought yet
+            // Make the Submit button red
         }
     }
 
@@ -87,7 +87,7 @@ export default function ReviewerScreenModal( props ) {
             props.refreshPage();
         }
         else {
-            // havn't thought yet
+            // Make the Submit button red
         }
     }
 
@@ -111,7 +111,7 @@ export default function ReviewerScreenModal( props ) {
 
             <div className="reviewer-dropdown">                
                 <div>
-                    Model Uncertainity Score : { document.uncertainity_score } % <br/>
+                    Model Uncertainity Score : { document.uncertainity_score.toFixed(2) } % <br/>
                     Document Word Count : { document.word_count } <br/>
                     Document Page Count : { document.page_count } <br/>
                 </div>

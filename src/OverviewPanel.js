@@ -11,34 +11,7 @@ import { Button } from '@mui/material';
 import ReviewerScreenModal from './ReviewerScreenModal';
 import { Multiselect } from "multiselect-react-dropdown";
 import Pagination from './components/pagination.js'
-
-const BASE_URL_BACKEND = "http://localhost:8000/";
-const BASE_URL_FRONTEND = "http://localhost:3000/";
-
-const TYPES = {
-    PDF: "PDF",
-    TEXT: "Text",
-    PIC: "Picture",
-};  
-
-const LABELS = {
-    NULL: "null",
-    LABEL0: "Label 0",
-    LABEL1: "Label 1", 
-    LABEL2: "Label 2",
-    LABEL3: "Label 3",   
-};
-
-const SORT_BY = {
-    NAME: "Name",
-    UNCERTAINITY_SCORE: "Uncertainity Score",
-    DOCUMENT_SIZE: "Document Size"
-};
-
-const STATUS = {
-    MANUALLY_REVIEWED: "Manually Reviewed",
-    AUTO_REVIEWED: "Auto Reviewed",
-}
+import { STATUS, LABELS, TYPES, SORT_BY, BASE_URL_BACKEND } from './variables'
 
 export default function OverviewPanel() {
     var [documents, setDocuments] = useState();
@@ -91,9 +64,9 @@ export default function OverviewPanel() {
 
         if( sortby.length === 1 ) {
             if( sortby[0] === SORT_BY.UNCERTAINITY_SCORE ) {
-                jsondata = jsondata.sort(function(doc1, doc2){
+                jsondata = jsondata.sort( function(doc1, doc2) {
                     return doc2.uncertainity_score - doc1.uncertainity_score;
-                })    
+                })
             } 
 
             else if( sortby[0] === SORT_BY.NAME ) {
@@ -237,7 +210,7 @@ export default function OverviewPanel() {
                         <th>Review Status</th>
                         <th>Label</th>
                         <th>Uncertainity</th>
-                        <th>Links</th>
+                        <th> Review </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -265,7 +238,7 @@ export default function OverviewPanel() {
                                 } </td>
 
                                 <td> {
-                                    ( doc.is_reviewed ) ? "-" : doc.uncertainity_score
+                                    ( doc.is_reviewed ) ? "-" : doc.uncertainity_score.toFixed(2)
                                 } </td>
 
                                 <td> 
