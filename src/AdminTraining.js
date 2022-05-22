@@ -21,6 +21,7 @@ export default function AdminTraining() {
     var [datasetName, setDatasetName] = useState("");
     var [labelName, setLabelName] = useState(["", "", "", ""]);
     var [tokenSize, setTokenSize] = useState(0);
+    var [initTrainDoc, setInitTrainDoc] = useState(0);
 
     async function fetchVarAPI() {
         const url = BASE_URL_BACKEND + "mainapp/getvariables/";
@@ -60,7 +61,6 @@ export default function AdminTraining() {
                 "endIdx" : startEndDataset[1]
             })
         };
-
         await fetch(url, requestOptions);
     }
 
@@ -77,10 +77,10 @@ export default function AdminTraining() {
                 "label2Name" : labelName[1],
                 "label3Name" : labelName[2],
                 "label4Name" : labelName[3],
-                "tokenSize" : tokenSize
+                "tokenSize" : tokenSize,
+                "initialDoc" : initialDoc
             })
         };
-
         await fetch(url, requestOptions);
     }
 
@@ -100,7 +100,6 @@ export default function AdminTraining() {
                 "curr_dataset_name" : currDataset,
             })
         };
-
         await fetch(url, requestOptions);
     }
 
@@ -118,6 +117,7 @@ export default function AdminTraining() {
     function handlebatchSize(e) { setBatchSize( e.target.value ); }
     function handleTokenSize(e) { setTokenSize( e.target.value ); }
     function changeDataset(e) { setCurrDataset( e.target.value ); }
+    function handleInitTrainDoc(e) { setInitTrainDoc( e.traget.value ); }
     
     useEffect(() => {
         fetchVarAPI();
@@ -296,7 +296,7 @@ export default function AdminTraining() {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Enter Token Size of the Dataset : </label>
+                                        <label>Enter Maximum length of a Document in the Dataset ( can we approx maximum lenght ) : </label>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -304,6 +304,19 @@ export default function AdminTraining() {
                                             name="label4name"
                                             value = { tokenSize }
                                             onChange = { handleTokenSize }
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Enter Number of Documents used for Initial Training : </label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter Label 4 Name"
+                                            name="label4name"
+                                            value = { initTrainDoc }
+                                            onChange = { handleInitTrainDoc }
                                             required
                                         />
                                     </div>
@@ -351,7 +364,7 @@ export default function AdminTraining() {
                                             required
                                         />
                                     </div>
-                
+
                                     <input type="submit" onClick={ createPDFs } className="btn btn-primary" value="Import Documents" />
                                 </form>
                             </div>

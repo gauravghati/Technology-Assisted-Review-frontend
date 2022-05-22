@@ -7,6 +7,7 @@ export default function Result() {
     var [reviewCnt, setReviewCnt] = useState([ 10,10 ]);
     var [ classAcc, setClassAcc ] = useState([ 0, 0, 0, 0 ]);
     var [ totalAcc, setTotAcc ] = useState(0);
+    var [ majorLabel, setMajorLabel ] = useState("NULL");
 
     async function fetchtheAPI() {
         const url = BASE_URL_BACKEND + "mainapp/documentlist/";
@@ -31,7 +32,17 @@ export default function Result() {
                 four++;
         }
 
-        setClassCnt( [one, two, three, four] );
+        var accarr = [one, two, three, four];
+
+        const max = Math.max(...accarr);
+        const index = accarr.indexOf(max);
+
+        if( index == 0 ) setMajorLabel( LABELS.LABEL0 );
+        else if( index == 1 ) setMajorLabel( LABELS.LABEL1 );
+        else if( index == 2 ) setMajorLabel( LABELS.LABEL2 );
+        else if( index == 3 ) setMajorLabel( LABELS.LABEL3 );
+ 
+        setClassCnt( accarr );
         setReviewCnt([isRev, notRev]);
     }
 
@@ -114,7 +125,7 @@ export default function Result() {
 
             <div className='resultDetails' >
                 Overall Accuracy : { totalAcc.toFixed(2) } % <br/>
-                Majority Label : Label 0 <br/>
+                Majority Label : { majorLabel } <br/>
                 Documents Reviewed : { reviewCnt[0] } <br/>
                 Documents Not Reviewed : { reviewCnt[1] } <br/>
             </div>

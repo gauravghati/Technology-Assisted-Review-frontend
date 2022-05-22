@@ -67,11 +67,15 @@ export default function OverviewPanel() {
                 jsondata = jsondata.sort( function(doc1, doc2) {
                     return doc2.uncertainity_score - doc1.uncertainity_score;
                 })
-            } 
+            }
 
             else if( sortby[0] === SORT_BY.NAME ) {
                 jsondata = jsondata.sort( (doc1 , doc2) => {
-                    return doc1.document_name - doc2.document_name;
+                    var a = doc1.document_name;
+                    var b = doc2.document_name;
+                    if (a === b)
+                        return 0;
+                    return a < b ? -1 : 1;
                 } )
             }
 
@@ -145,7 +149,12 @@ export default function OverviewPanel() {
         <div>
             <div className="filterAndSearch">
                 <div className="search_box">
-                    <input className='search_input' type="text" placeholder="Search Documents" />
+                    <input 
+                        className='search_input' 
+                        type="text" 
+                        placeholder="Search Documents" 
+                    />
+
                     <button className='overviewButtons' onClick={ () => linkButtonClicked( Math.floor( Math.random() * documentIndexList.length ) ) } >
                         <ShuffleIcon/>
                         <font className="textpickrandom" >Pick Random</font>
@@ -209,8 +218,8 @@ export default function OverviewPanel() {
                         <th>Document Name</th>
                         <th>Review Status</th>
                         <th>Label</th>
-                        <th>Uncertainity</th>
-                        <th> Review </th>
+                        <th>Confidence Score</th>
+                        <th>Review</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -238,7 +247,7 @@ export default function OverviewPanel() {
                                 } </td>
 
                                 <td> {
-                                    ( doc.is_reviewed ) ? "-" : doc.uncertainity_score.toFixed(2)
+                                    ( doc.is_reviewed ) ? "-" : ( 100 - doc.uncertainity_score ).toFixed(2)
                                 } </td>
 
                                 <td> 
