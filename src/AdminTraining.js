@@ -30,7 +30,7 @@ export default function AdminTraining() {
 
         setProjectPath( jsondata.main_project_location );
         setIncrementalEpochs( jsondata.increment_epochs );
-        setInitialEpochs( jsondata.intial_epochs );
+        setInitialEpochs( jsondata.initial_epochs );
         setInqueMaxLen( jsondata.inque_maxlen );
         setBatchSize( jsondata.batch_size );
         setCurrDataset( jsondata.curr_dataset );
@@ -93,7 +93,7 @@ export default function AdminTraining() {
             },
             body : JSON.stringify({
                 "main_project_location" : mainProjectPath,
-                "intial_epochs" : intialEpochs,
+                "initial_epochs" : intialEpochs,
                 "increment_epochs" : incrementalEpochs,
                 "inque_maxlen" : inqueMaxLen,
                 "batch_size" : batchSize,
